@@ -1,11 +1,32 @@
-import { useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Button, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons'
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { API_URL, API_TOKEN } from '@env';
 
 export default function Detail({ route, navigation }) {
 
     const { movie } = route.params;
+    const [highlight, setHighlight] = useState(0);
+
+    const rateClicked = () => {
+        if (highlight > 0 && highlight < 6) {
+            fetch(`${API_URL}/api/movies/${movie.id}/rate_movie/`, {
+                method: "POST",
+                headers: {
+                    'Authorization': `Token ${API_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ stars: highlight })
+            })
+                .then(res => res.json())
+                .then(res => {
+                    setHighlight(0);
+                    Alert.alert("Rating", res.message);
+                })
+                .catch(error => Alert.alert("Error", error));
+        }
+    }
 
     useEffect(() => {
         navigation.setOptions({
@@ -45,14 +66,34 @@ export default function Detail({ route, navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.starContainer}>
-                <FontAwesomeIcon style={movie.avg_rating > 0 ? styles.orange : styles.white} icon={faStar} />
-                <FontAwesomeIcon style={movie.avg_rating > 1 ? styles.orange : styles.white} icon={faStar} />
-                <FontAwesomeIcon style={movie.avg_rating > 2 ? styles.orange : styles.white} icon={faStar} />
-                <FontAwesomeIcon style={movie.avg_rating > 3 ? styles.orange : styles.white} icon={faStar} />
-                <FontAwesomeIcon style={movie.avg_rating > 4 ? styles.orange : styles.white} icon={faStar} />
+                {[...Array(5)].map((_, index) => (
+                    <FontAwesomeIcon
+                        key={index}
+                        style={movie.avg_rating > index ? styles.orange : styles.white}
+                        icon={faStar}
+                    />
+                ))}
                 <Text style={styles.white}>({movie.no_of_ratings})</Text>
             </View>
+
             <Text style={styles.description}>{movie.description}</Text>
+
+            <View style={{ borderBottomColor: 'purple', borderBottomWidth: 2 }} />
+            <Text style={styles.description}>Rate the movie!</Text>
+
+            <View style={styles.starContainer}>
+                {[1, 2, 3, 4, 5].map((value) => (
+                    <TouchableOpacity key={value} onPress={() => setHighlight(value)}>
+                        <FontAwesomeIcon
+                            style={highlight >= value ? styles.purple : styles.grey}
+                            icon={faStar}
+                            size={48}
+                        />
+                    </TouchableOpacity>
+                ))}
+            </View>
+            <Button title="Rate" onPress={() => rateClicked()} />
+
         </View>
     );
 }
@@ -78,5 +119,11 @@ const styles = StyleSheet.create({
     },
     white: {
         color: 'white'
+    },
+    purple: {
+        color: 'purple'
+    },
+    grey: {
+        color: '#ccc'
     }
 });
