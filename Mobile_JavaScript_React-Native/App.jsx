@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import MovieList from './components/list';
 import Detail from './components/detail';
+import Edit from './components/edit';
 
 // Import necessary components from React Navigation v5
 import { NavigationContainer } from '@react-navigation/native';
@@ -29,6 +30,13 @@ function App() {
           component={Detail}
           options={{
             title: 'Movie'
+          }}
+        />
+        <Stack.Screen
+          name="Edit"
+          component={Edit}
+          options={{
+            title: 'Edit'
           }}
         />
       </Stack.Navigator>

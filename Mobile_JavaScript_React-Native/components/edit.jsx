@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons'
+import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
 
-export default function Detail({ route, navigation }) {
+export default function Edit({ route, navigation }) {
 
     const { movie } = route.params;
 
@@ -28,7 +26,6 @@ export default function Detail({ route, navigation }) {
                         paddingHorizontal: 12,
                         borderRadius: 5
                     }}
-                    onPress={() => navigation.navigate("Edit", { movie: movie })}
                 >
                     <Text
                         style={{
@@ -44,15 +41,7 @@ export default function Detail({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-            <View style={styles.starContainer}>
-                <FontAwesomeIcon style={movie.avg_rating > 0 ? styles.orange : styles.white} icon={faStar} />
-                <FontAwesomeIcon style={movie.avg_rating > 1 ? styles.orange : styles.white} icon={faStar} />
-                <FontAwesomeIcon style={movie.avg_rating > 2 ? styles.orange : styles.white} icon={faStar} />
-                <FontAwesomeIcon style={movie.avg_rating > 3 ? styles.orange : styles.white} icon={faStar} />
-                <FontAwesomeIcon style={movie.avg_rating > 4 ? styles.orange : styles.white} icon={faStar} />
-                <Text style={styles.white}>({movie.no_of_ratings})</Text>
-            </View>
-            <Text style={styles.description}>{movie.description}</Text>
+            <Text style={styles.description}>Edit {movie.title}</Text>
         </View>
     );
 }
@@ -67,16 +56,5 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: 'white',
         padding: 10
-    },
-    starContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row'
-    },
-    orange: {
-        color: 'orange'
-    },
-    white: {
-        color: 'white'
     }
 });

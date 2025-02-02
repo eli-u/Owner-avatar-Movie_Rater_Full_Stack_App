@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { API_URL, API_TOKEN } from '@env';
