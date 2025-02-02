@@ -30,7 +30,7 @@ export default function Detail({ route, navigation }) {
 
     useEffect(() => {
         navigation.setOptions({
-            title: movie.title,
+            // title: movie.title,
             headerStyle: {
                 backgroundColor: 'orange'
             },
@@ -65,6 +65,7 @@ export default function Detail({ route, navigation }) {
 
     return (
         <View style={styles.container}>
+            <Text style={styles.title}>{movie.title}</Text>
             <View style={styles.starContainer}>
                 {[...Array(5)].map((_, index) => (
                     <FontAwesomeIcon
@@ -103,6 +104,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#282C35',
         padding: 10
+    },
+    title: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        color: 'white',
+        padding: 10,
+        textAlign: 'center',
     },
     description: {
         fontSize: 20,
