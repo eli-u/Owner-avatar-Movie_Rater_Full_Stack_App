@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { API_URL, API_TOKEN } from '@env';
 
-export default function MovieList(props) {
+export default function MovieList({ navigation }) {
     const [movies, setMovies] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -34,8 +34,38 @@ export default function MovieList(props) {
     };
 
     const movieClicked = (movie) => {
-        props.navigation.navigate("Detail", { movie: movie, title: movie.title });
+        navigation.navigate("Detail", { movie: movie, title: movie.title });
     };
+
+    useEffect(() => {
+        navigation.setOptions({
+            title: "Movie List",
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 24,
+                // color: 'white',
+            },
+            headerTitleAlign: 'center',
+            headerRight: () => (
+                <TouchableOpacity
+                    style={{
+                        paddingVertical: 6,
+                        paddingHorizontal: 12,
+                        borderRadius: 5
+                    }}
+                    onPress={() => navigation.navigate("Edit", { movie: { title: '', describtion: '' } })}
+                >
+                    <Text
+                        style={{
+                            color: 'black',
+                            fontSize: 18,
+                            fontWeight: 'bold'
+                        }}
+                    >Add New</Text>
+                </TouchableOpacity>
+            )
+        });
+    }, [navigation]);
 
     return (
         <FlatList
