@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import Auth from './components/auth';
 import MovieList from './components/list';
 import Detail from './components/detail';
 import Edit from './components/edit';
@@ -14,31 +15,11 @@ const Stack = createStackNavigator();
 function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="MovieList">
-        <Stack.Screen
-          name="MovieList"
-          component={MovieList}
-          options={{
-            title: 'Movie Rater',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            }
-          }}
-        />
-        <Stack.Screen
-          name="Detail"
-          component={Detail}
-          options={{
-            title: 'Movie'
-          }}
-        />
-        <Stack.Screen
-          name="Edit"
-          component={Edit}
-          options={{
-            title: 'Edit'
-          }}
-        />
+      <Stack.Navigator initialRouteName="Auth">
+        <Stack.Screen name="Auth" component={Auth} />
+        <Stack.Screen name="MovieList" component={MovieList} />
+        <Stack.Screen name="Detail" component={Detail} />
+        <Stack.Screen name="Edit" component={Edit} />
       </Stack.Navigator>
     </NavigationContainer>
   );
