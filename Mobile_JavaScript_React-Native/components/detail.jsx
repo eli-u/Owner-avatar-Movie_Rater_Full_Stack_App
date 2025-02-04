@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TouchableOpacity, Button, Alert } from 'react-n
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { API_URL, API_TOKEN } from '@env';
+import { HeaderBackButton } from '@react-navigation/elements';
+
 
 export default function Detail({ route, navigation }) {
 
@@ -30,17 +32,27 @@ export default function Detail({ route, navigation }) {
 
     useEffect(() => {
         navigation.setOptions({
-            // title: movie.title,
+            title: "Movie List",
             headerStyle: {
                 backgroundColor: 'orange'
             },
             headerTitleStyle: {
                 fontWeight: 'bold',
-                fontSize: 24,
+                fontSize: 18,
                 // color: 'white',
             },
-            headerTitleAlign: 'center',
+            // headerTitleAlign: 'center',
             headerTintColor: 'white',
+            // headerLeft: () => (
+            //     <TouchableOpacity>
+            //         {/* <Text style={{ color: 'white', fontSize: 18 }}></Text> */}
+            //     </TouchableOpacity>
+            // ),
+            headerLeft: () =>
+                <HeaderBackButton
+                    tintColor='white'
+                    onPress={() => navigation.navigate('MovieList')}
+                />,
             headerRight: () => (
                 <TouchableOpacity
                     style={{
@@ -93,7 +105,13 @@ export default function Detail({ route, navigation }) {
                     </TouchableOpacity>
                 ))}
             </View>
-            <Button title="Rate" onPress={() => rateClicked()} />
+
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => rateClicked()}
+            >
+                <Text style={styles.buttonText}>Rate</Text>
+            </TouchableOpacity>
 
         </View>
     );
@@ -133,5 +151,18 @@ const styles = StyleSheet.create({
     },
     grey: {
         color: '#ccc'
+    },
+    button: {
+        backgroundColor: 'orange',
+        padding: 12,
+        borderRadius: 8,
+        width: 150, // Set a fixed width
+        alignSelf: 'center', // Center the button
+        alignItems: 'center', // Center the text inside
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
     }
 });
