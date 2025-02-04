@@ -1,40 +1,66 @@
 import { useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import { API_URL, API_TOKEN } from '@env';
+import { API_URL } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MovieList({ navigation }) {
     const [movies, setMovies] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
-        fetchMovies();
+
+        getData();
     }, []);
 
-    // Function to fetch movies from the API
-    const fetchMovies = () => {
-        fetch(`${API_URL}/api/movies/`, {
-            method: "GET",
-            headers: {
-                'Authorization': `Token ${API_TOKEN}`,
-            },
-        })
-            .then(res => res.json())
-            .then(jsonRes => setMovies(jsonRes))
-            .catch(error => console.log(error));
+    // Fetch token and then fetch movies
+    const getData = async () => {
+        try {
+            const storedToken = await AsyncStorage.getItem('MR_Token');
+            if (storedToken) {
+                setToken(storedToken);
+                getMovies(storedToken);
+            } else {
+                navigation.navigate("Auth");
+            }
+        } catch (error) {
+            console.error("Error retrieving token:", error);
+        }
     };
 
-    // Function to handle the pull-to-refresh action
-    const onRefresh = () => {
+    // Fetch movies only when the token is available
+    const getMovies = async (authToken) => {
+        try {
+            const response = await fetch(`${API_URL}/api/movies/`, {
+                method: "GET",
+                headers: {
+                    'Authorization': `Token ${authToken}`,
+                },
+            });
+
+            const jsonRes = await response.json();
+            setMovies(jsonRes);
+        } catch (error) {
+            console.error("Error fetching movies:", error);
+        }
+    };
+
+    // Pull-to-refresh action
+    const onRefresh = async () => {
         setIsRefreshing(true);
-        // Simulate a network call and prepend new data
-        setTimeout(() => {
-            fetchMovies(); // Fetch new data and update the list
-            setIsRefreshing(false); // Stop refreshing
-        }, 1500);
+        if (token) {
+            await getMovies(token);
+        }
+        setIsRefreshing(false);
     };
 
     const movieClicked = (movie) => {
-        navigation.navigate("Detail", { movie: movie, title: movie.title });
+        navigation.navigate("Detail", { movie, title: movie.title, token });
+    };
+
+    const handleLogout = async () => {
+        await AsyncStorage.removeItem('MR_Token'); // Clear the token
+        navigation.navigate("Auth"); // Navigate back to the Auth screen
     };
 
     useEffect(() => {
@@ -43,7 +69,6 @@ export default function MovieList({ navigation }) {
             headerTitleStyle: {
                 fontWeight: 'bold',
                 fontSize: 24,
-                // color: 'white',
             },
             headerTitleAlign: 'center',
             headerRight: () => (
@@ -53,17 +78,17 @@ export default function MovieList({ navigation }) {
                         paddingHorizontal: 12,
                         borderRadius: 5
                     }}
-                    onPress={() => navigation.navigate("Edit", { movie: { title: '', describtion: '' } })}
+                    onPress={() => navigation.navigate("Edit", { movie: { title: '', description: '' } })}
                 >
-                    <Text
-                        style={{
-                            color: 'black',
-                            fontSize: 18,
-                            fontWeight: 'bold'
-                        }}
-                    >Add New</Text>
+                    <Text style={{ color: 'black', fontSize: 18, fontWeight: 'bold' }}>Add New</Text>
                 </TouchableOpacity>
-            )
+            ),
+            headerLeft: () => (
+                <TouchableOpacity onPress={handleLogout}>
+                    <Text style={{ fontSize: 18, color: 'orange', fontWeight: 'bold', marginLeft: 10 }}>Logout</Text>
+                </TouchableOpacity>
+            ),
+
         });
     }, [navigation]);
 
@@ -81,7 +106,7 @@ export default function MovieList({ navigation }) {
             refreshControl={
                 <RefreshControl
                     refreshing={isRefreshing}
-                    onRefresh={onRefresh} // Trigger onRefresh when pulled
+                    onRefresh={onRefresh}
                     tintColor="orange"
                     title="Pull to Refresh"
                     titleColor="orange"
@@ -106,8 +131,8 @@ const styles = StyleSheet.create({
         padding: 10,
         height: 50,
         backgroundColor: '#282C35',
-        borderBottomWidth: 0, // Remove bottom border
-        borderTopWidth: 0, // Remove top border
+        borderBottomWidth: 0,
+        borderTopWidth: 0,
     },
     itemText: {
         color: '#ffffff',

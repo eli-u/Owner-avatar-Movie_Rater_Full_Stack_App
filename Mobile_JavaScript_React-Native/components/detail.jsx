@@ -8,7 +8,7 @@ import { HeaderBackButton } from '@react-navigation/elements';
 
 export default function Detail({ route, navigation }) {
 
-    const { movie } = route.params;
+    const { movie, token } = route.params;
     const [highlight, setHighlight] = useState(0);
 
     const rateClicked = () => {
@@ -16,7 +16,7 @@ export default function Detail({ route, navigation }) {
             fetch(`${API_URL}/api/movies/${movie.id}/rate_movie/`, {
                 method: "POST",
                 headers: {
-                    'Authorization': `Token ${API_TOKEN}`,
+                    'Authorization': `Token ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ stars: highlight })
